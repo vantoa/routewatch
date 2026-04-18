@@ -1,38 +1,45 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "title": "RouteWatch Configuration",
-  "description": "Configuration schema for routewatch CLI tool",
+  "title": "RouteWatch Config",
   "type": "object",
   "properties": {
     "appDir": {
       "type": "string",
-      "description": "Root directory of the Next.js app router (relative to project root)",
-      "default": "app"
-    },
-    "ignore": {
-      "type": "array",
-      "items": { "type": "string" },
-      "description": "List of directory or file patterns to ignore during scanning",
-      "default": ["node_modules", ".next", "dist"]
+      "description": "Path to the Next.js app directory"
     },
     "output": {
       "type": "string",
       "enum": ["text", "json", "markdown"],
-      "description": "Output format for the diff report",
-      "default": "text"
+      "description": "Output format for the diff report"
     },
-    "outputFile": {
+    "reportFile": {
       "type": "string",
-      "description": "Optional file path to write the report output to"
+      "description": "Optional file path to write the report to"
     },
-    "methods": {
-      "type": "array",
-      "items": {
-        "type": "string",
-        "enum": ["GET", "POST", "PUT", "PATCH", "DELETE", "HEAD", "OPTIONS"]
+    "watch": {
+      "type": "boolean",
+      "description": "Enable watch mode"
+    },
+    "cache": {
+      "type": "boolean",
+      "description": "Enable route scan caching"
+    },
+    "filter": {
+      "type": "object",
+      "description": "Route filtering options",
+      "properties": {
+        "include": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Glob patterns for routes to include"
+        },
+        "exclude": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Glob patterns for routes to exclude"
+        }
       },
-      "description": "HTTP methods to track in route files",
-      "default": ["GET", "POST", "PUT", "PATCH", "DELETE", "HEAD", "OPTIONS"]
+      "additionalProperties": false
     }
   },
   "additionalProperties": false
