@@ -1,0 +1,9 @@
+# routewatch ignore file
+# Patterns listed here will be excluded from route scanning
+
+# Ignore internal/private routes
+**/internal/**
+
+# Ignore test/mock routes
+**/mock/**
+**/test-routes/**
