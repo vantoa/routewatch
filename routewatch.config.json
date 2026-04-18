@@ -1,0 +1,6 @@
+{
+  "appDir": "app",
+  "ignore": ["node_modules", ".next", "dist", "__tests__"],
+  "output": "text",
+  "methods": ["GET", "POST", "PUT", "PATCH", "DELETE", "HEAD", "OPTIONS"]
+}
