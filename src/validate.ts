@@ -71,3 +71,21 @@ export function formatValidationReport(report: ValidationReport): string {
   }
   return lines.join('\n');
 }
+
+/**
+ * Returns only the validation results that contain violations for a specific rule.
+ * Useful for filtering reports when you care about one rule at a time.
+ */
+export function filterByRule(
+  report: ValidationReport,
+  ruleName: string
+): ValidationResult[] {
+  return report.results
+    .map((r) => ({
+      route: r.route,
+      violations: r.violations.filter((v) =>
+        v.toLowerCase().includes(ruleName.toLowerCase())
+      ),
+    }))
+    .filter((r) => r.violations.length > 0);
+}
