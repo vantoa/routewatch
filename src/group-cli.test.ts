@@ -52,4 +52,16 @@ describe('registerGroupCommand', () => {
     expect(log).toHaveBeenCalledWith('No changes found.');
     log.mockRestore();
   });
+
+  it('prints grouped results when changes are present', async () => {
+    jest.spyOn(group, 'groupChanges').mockReturnValue([
+      { key: 'added', changes: [{ type: 'added' as const, route: '/api/users', methods: ['GET'] }] },
+      { key: 'removed', changes: [{ type: 'removed' as const, route: '/api/old', methods: ['POST'] }] },
+    ]);
+    const log = jest.spyOn(console, 'log').mockImplementation(() => {});
+    const program = makeProgram();
+    await program.parseAsync(['node', 'cli', 'group', './before', './after']);
+    expect(log).not.toHaveBeenCalledWith('No changes found.');
+    log.mockRestore();
+  });
 });
