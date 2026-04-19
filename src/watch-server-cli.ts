@@ -1,34 +1,20 @@
 import { Command } from 'commander';
-import { EventEmitter } from 'events';
 import { createWatchServer } from './watch-server';
-import { watchRoutes } from './watcher';
-import { diffRoutes } from './differ';
-import { scanRoutes } from './scanner';
 
 export function registerWatchServerCommand(program: Command): void {
   program
-    .command('watch-server <dir>')
-    .description('Watch a Next.js project and stream route changes via SSE')
-    .option('-p, --port <number>', 'SSE server port', '4242')
-    .option('--host <host>', 'SSE server host', 'localhost')
-    .action(async (dir: string, opts: { port: string; host: string }) => {
+    .command('watch-server')
+    .description('Start a WebSocket server that broadcasts route changes')
+    .option('-d, --dir <path>', 'Next.js app directory', '.')
+    .option('-p, --port <number>', 'Port to listen on', '3001')
+    .action(async (opts) => {
       const port = parseInt(opts.port, 10);
-      const emitter = new EventEmitter();
-
-      const server = createWatchServer(emitter, { port, host: opts.host });
-      await server.start();
-      console.log(`SSE server listening on http://${opts.host}:${port}/events`);
-
-      let previous = await scanRoutes(dir);
-
-      watchRoutes(dir, async () => {
-        const current = await scanRoutes(dir);
-        const changes = diffRoutes(previous, current);
-        if (changes.length > 0) {
-          emitter.emit('change', changes);
-          console.log(`[${new Date().toISOString()}] ${changes.length} change(s) detected`);
-        }
-        previous = current;
+      const server = createWatchServer(opts.dir, port);
+      server.start();
+      console.log(`RouteWatch server listening on ws://localhost:${port}`);
+      process.on('SIGINT', () => {
+        server.stop();
+        process.exit(0);
       });
     });
 }
