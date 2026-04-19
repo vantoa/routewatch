@@ -21,23 +21,23 @@ export function computeStats(diff: DiffResult[]): RouteStats {
     if (change.type === 'added') {
       stats.totalAdded++;
       for (const method of change.methods ?? []) {
-        if (!stats.methodBreakdown[method]) stats.methodBreakdown[method] = { added: 0, removed: 0 };
+        ensureMethod(stats.methodBreakdown, method);
         stats.methodBreakdown[method].added++;
       }
     } else if (change.type === 'removed') {
       stats.totalRemoved++;
       for (const method of change.methods ?? []) {
-        if (!stats.methodBreakdown[method]) stats.methodBreakdown[method] = { added: 0, removed: 0 };
+        ensureMethod(stats.methodBreakdown, method);
         stats.methodBreakdown[method].removed++;
       }
     } else if (change.type === 'modified') {
       stats.totalModified++;
       for (const method of change.addedMethods ?? []) {
-        if (!stats.methodBreakdown[method]) stats.methodBreakdown[method] = { added: 0, removed: 0 };
+        ensureMethod(stats.methodBreakdown, method);
         stats.methodBreakdown[method].added++;
       }
       for (const method of change.removedMethods ?? []) {
-        if (!stats.methodBreakdown[method]) stats.methodBreakdown[method] = { added: 0, removed: 0 };
+        ensureMethod(stats.methodBreakdown, method);
         stats.methodBreakdown[method].removed++;
       }
     } else {
@@ -46,6 +46,14 @@ export function computeStats(diff: DiffResult[]): RouteStats {
   }
 
   return stats;
+}
+
+/** Ensures a method key exists in the breakdown map. */
+function ensureMethod(
+  breakdown: Record<string, { added: number; removed: number }>,
+  method: string
+): void {
+  if (!breakdown[method]) breakdown[method] = { added: 0, removed: 0 };
 }
 
 export function formatStats(stats: RouteStats): string {
