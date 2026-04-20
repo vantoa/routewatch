@@ -59,4 +59,9 @@ describe('snapshot integration', () => {
     const after = await listSnapshots(tmpDir);
     expect(after.map(s => s.name)).not.toContain('temp');
   });
+
+  it('returns null when loading a non-existent snapshot', async () => {
+    const loaded = await loadSnapshot('does-not-exist', tmpDir);
+    expect(loaded).toBeNull();
+  });
 });
