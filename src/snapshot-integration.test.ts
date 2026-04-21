@@ -64,4 +64,22 @@ describe('snapshot integration', () => {
     const loaded = await loadSnapshot('does-not-exist', tmpDir);
     expect(loaded).toBeNull();
   });
+
+  it('overwrites an existing snapshot when saved with the same name', async () => {
+    await writeRoute(tmpDir, 'app/api/users/route.ts', 'export async function GET() {}');
+    const routesV1 = await scanRoutes(tmpDir);
+    await saveSnapshot(createSnapshot('overwrite-test', routesV1), tmpDir);
+
+    await writeRoute(tmpDir, 'app/api/posts/route.ts', 'export async function POST() {}');
+    const routesV2 = await scanRoutes(tmpDir);
+    await saveSnapshot(createSnapshot('overwrite-test', routesV2), tmpDir);
+
+    const loaded = await loadSnapshot('overwrite-test', tmpDir);
+    expect(loaded).not.toBeNull();
+    expect(loaded!.routes).toEqual(routesV2);
+
+    // Ensure only one snapshot with this name exists
+    const list = await listSnapshots(tmpDir);
+    expect(list.filter(s => s.name === 'overwrite-test')).toHaveLength(1);
+  });
 });
