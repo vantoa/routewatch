@@ -15,6 +15,16 @@ async function get(path: string): Promise<{ status: number; body: string }> {
   });
 }
 
+/** Opens an SSE connection and returns the raw IncomingMessage stream. */
+function openSSE(): Promise<http.IncomingMessage> {
+  return new Promise((resolve, reject) => {
+    const req = http.get(`http://localhost:${TEST_PORT}/events`, (res) => {
+      resolve(res);
+    });
+    req.on('error', reject);
+  });
+}
+
 describe('createWatchServer', () => {
   let emitter: EventEmitter;
   let server: ReturnType<typeof createWatchServer>;
@@ -43,6 +53,12 @@ describe('createWatchServer', () => {
 
   it('reports zero clients initially', () => {
     expect(server.clientCount).toBe(0);
+  });
+
+  it('increments clientCount when an SSE client connects', async () => {
+    const res = await openSSE();
+    expect(server.clientCount).toBe(1);
+    res.destroy();
   });
 
   it('streams events to SSE clients', (done) => {
