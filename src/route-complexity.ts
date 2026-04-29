@@ -75,3 +75,14 @@ export function formatComplexityReport(report: ComplexityReport): string {
   }
   return lines.join('\n');
 }
+
+/**
+ * Returns all routes whose complexity score exceeds the given threshold.
+ * Useful for flagging overly complex routes in CI or lint checks.
+ */
+export function getRoutesAboveThreshold(
+  report: ComplexityReport,
+  threshold: number
+): ComplexityScore[] {
+  return report.routes.filter(r => r.score > threshold);
+}
